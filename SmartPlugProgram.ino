@@ -29,7 +29,35 @@
 
 
 void setup(){
-    Serial.begin(9600);
+Serial.begin(115200);
+   
+   //WifiManager:
+    WiFiManager wm;
+
+    wm.resetSettings();
+
+    bool res;
+
+    res = wm.autoConnect("NamaHotspot");
+
+    if(!res) {
+
+     Serial.println("Failed to connect");
+
+     // ESP.restart();
+
+    } 
+
+    else {
+
+        //if you get here you have connected to the WiFi    
+
+        Serial.println("connected...yeey :)");
+
+    }
+    WiFi.mode(WIFI_STA);
+
+
 }
 
 void loop(){
