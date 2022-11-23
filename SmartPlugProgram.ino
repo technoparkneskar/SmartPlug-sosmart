@@ -1,4 +1,4 @@
-#include <PZEM004tv30.h>
+#include <PZEM004Tv30.h>
 #include <FirebaseESP8266.h>
 #include <WiFiManager.h>
 
@@ -19,10 +19,10 @@
  #define lamp_saklar2 4 //D2
  #define saklar1 0 //D3
  #define saklar1 2 //D4
- String String val1;
- String String val2;
- String String val3;
- String String val4;
+ String val1;
+ String val2;
+ String val3;
+ String val4;
  String zero = "0" , one = "1";
 
 
