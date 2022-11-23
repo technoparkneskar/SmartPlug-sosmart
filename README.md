@@ -15,5 +15,5 @@ _ FirebaseEsp8266
 
 File firebase=
 
-user information : user/(namauser)
-product information : product/(id product)
+- user information : user/(namauser)
+- product information : product/(id product)
