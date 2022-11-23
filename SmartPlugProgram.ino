@@ -1,10 +1,31 @@
 #include <PZEM004tv30.h>
+#include <FirebaseESP8266.h>
+#include <WiFiManager.h>
+
+//Firebase autentikasi 
+ #define FIREBASE_HOST "https://areauji-default-rtdb.firebaseio.com" //Sesuaikan dengan link firebase database kalian, tanpa menggunakan "http:" , "\" and "/"
+ #define FIREBASE_AUTH "Bn7LhCTiP8VphRn53K2WmcqlHvV6WnexeRj7vKLa3ns" //Sesuaikan dengan firebase database secret code kalian
+
+//Nama hotspot jika tak tersambung
+ #define NamaHotspot "ControlLampFirebase" // Nama hotspot di esp8266
 
 //Pzem sensor
  PZEM004Tv30 pzem(12,13);// D6 dan D7
  float Power,Energy,Voltase,Current;
 
 // Firebase
+ FirebaseData firebaseData;
+ #define lamp_saklar1 5 //D1
+ #define lamp_saklar2 4 //D2
+ #define saklar1 0 //D3
+ #define saklar1 2 //D4
+ String String val1;
+ String String val2;
+ String String val3;
+ String String val4;
+ String zero = "0" , one = "1";
+
+
 
 
 void setup(){
