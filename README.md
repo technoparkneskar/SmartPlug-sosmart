@@ -10,5 +10,10 @@ Alat diperlukan=
 - led ( custom )
 
 library digunakan =
+- PZEM004tv30
+_ FirebaseEsp8266
 
+File firebase=
 
+user information : user/(namauser)
+product information : product/(id product)
