@@ -1,6 +1,9 @@
 #include <PZEM004Tv30.h>
 #include <FirebaseESP8266.h>
 #include <WiFiManager.h>
+#include <NTPClient.h>
+#include <ESP8266WiFi.h>
+#include <WiFiUdp.h>
 
 //Firebase autentikasi 
  #define FIREBASE_HOST "https://sosmart-technopark-default-rtdb.firebaseio.com/" //Sesuaikan dengan link firebase database kalian, tanpa menggunakan "http:" , "\" and "/"
@@ -13,6 +16,11 @@
  PZEM004Tv30 pzem(12,13);// D6 dan D7
  float Power,Energy,Voltase,Current;
  
+String Second;
+String Minute;
+String Hour;
+String shh;
+
 // Firebase
  FirebaseData firebaseData;
  #define Lamp_saklar1 5 //D1
@@ -23,7 +31,12 @@
  String val2;
  String val3;
  String val4;
+ String val5;
  String zero = "0" , one = "1";
+
+//Internet CLock
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "id.pool.ntp.org",25200,60000);
 
 void setup(){
     
@@ -31,7 +44,6 @@ Serial.begin(115200);
    
    //WifiManager:
     WiFiManager wm;
-    wm.resetSettings();
     bool res;
     res = wm.autoConnect(NamaHotspot);
     if(!res) {
@@ -46,8 +58,6 @@ Serial.begin(115200);
     Serial.print('\n');
     Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH); // connect to firebase
     Firebase.reconnectWiFi(true);
-    Firebase.setString(firebaseData, "Product/1BFOAB5PL482/Saklar2","0");
-    Firebase.setString(firebaseData, "Product/1BFOAB5PL482/Saklar2","1");
     
    //PinMode
     pinMode(Saklar1,OUTPUT);
@@ -55,12 +65,22 @@ Serial.begin(115200);
     pinMode(Lamp_saklar1,OUTPUT);
     pinMode(Lamp_saklar2,OUTPUT);
    
-}
+   //Internet clock begin
+    timeClient.begin();}
 
 void loop(){
-    
- //Read power
- Power = pzem.power();
+    shh=8;
+   //Update time
+    timeClient.update();       
+    Second = Serial.println(timeClient.getSeconds());
+    Minute = Serial.println(timeClient.getMinutes());
+    Hour = Serial.println(timeClient.getHours());
+    Serial.print(Second);
+    Serial.print(Minute);
+    Serial.println(Hour);    
+            
+   //Read power
+    Power = pzem.power();
     
     if(isnan(Power)){
         Serial.print("Mati");
@@ -141,6 +161,21 @@ void loop(){
       digitalWrite(Saklar2,LOW);
       digitalWrite(Lamp_saklar2,LOW);
       Serial.println("Saklar 2 OFF");
-    }    
+    }
+
+    //Firebase TimeSaklar1 On
+     Firebase.getString(firebaseData, "Product/1BFOAB5PL482/Timeon1/Detik");
+     val3 = firebaseData.stringData(); Serial.print('\n');
+     Firebase.getString(firebaseData, "Product/1BFOAB5PL482/Timeon1/Jam");
+     val4 = firebaseData.stringData(); Serial.print('\n');
+     Firebase.getString(firebaseData, "Product/1BFOAB5PL482/Timeon1/Menit");
+     val5 = firebaseData.stringData(); Serial.print('\n');     
+
+     if(val3>Second && val3+10<Second){ 
+      digitalWrite(Saklar1,HIGH);
+      digitalWrite(Lamp_saklar1,HIGH);
+      Serial.println("Saklar1 ON");
+      Firebase.setString(firebaseData, "Product/1BFOAB5PL482/Saklar1","1");      
+     }           
   
 }
