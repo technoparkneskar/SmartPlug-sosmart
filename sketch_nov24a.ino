@@ -3,8 +3,8 @@
 #include <WiFiManager.h>
 
 //Firebase autentikasi 
- #define FIREBASE_HOST "https://areauji-default-rtdb.firebaseio.com" //Sesuaikan dengan link firebase database kalian, tanpa menggunakan "http:" , "\" and "/"
- #define FIREBASE_AUTH "Bn7LhCTiP8VphRn53K2WmcqlHvV6WnexeRj7vKLa3ns" //Sesuaikan dengan firebase database secret code kalian
+ #define FIREBASE_HOST "https://sosmart-technopark-default-rtdb.firebaseio.com/" //Sesuaikan dengan link firebase database kalian, tanpa menggunakan "http:" , "\" and "/"
+ #define FIREBASE_AUTH "afL12P1vXA0goN4ia42rsC4DUYLnNMqI19XRIye6" //Sesuaikan dengan firebase database secret code kalian
 
 //Nama hotspot jika tak tersambung
  #define NamaHotspot "ControlLampFirebase" // Nama hotspot di esp8266
@@ -12,7 +12,7 @@
 //Pzem sensor
  PZEM004Tv30 pzem(12,13);// D6 dan D7
  float Power,Energy,Voltase,Current;
-
+ 
 // Firebase
  FirebaseData firebaseData;
  #define Lamp_saklar1 5 //D1
@@ -53,12 +53,13 @@ Serial.begin(115200);
     pinMode(Saklar2,OUTPUT);
     pinMode(Lamp_saklar1,OUTPUT);
     pinMode(Lamp_saklar2,OUTPUT);
+   
 }
 
 void loop(){
     
-   //Read power
-    Power = pzem.power();
+ //Read power
+ Power = pzem.power();
     
     if(isnan(Power)){
         Serial.print("Mati");
@@ -106,7 +107,7 @@ void loop(){
      }
    
     //Firebase Saklar1
-     Firebase.getString(firebaseData, "/product/1BFOAB5PL482/Saklar1");
+     Firebase.getString(firebaseData, "/Product/1BFOAB5PL482/Saklar1");
      val1 = firebaseData.stringData(); Serial.print('\n');
 
      Serial.print("Value 1 ");
@@ -120,24 +121,25 @@ void loop(){
      else if(val1==zero){ 
       digitalWrite(Saklar1,LOW);
       digitalWrite(Lamp_saklar1,LOW);
-      Serial.println("Saklar 2 OFF");
+      Serial.println("Saklar 1 OFF");
       }
     
     //Firebase Saklar2
-     Firebase.getString(firebaseData, "/product/1BFOAB5PL482/Saklar2");
-     val1 = firebaseData.stringData(); Serial.print('\n');
+     Firebase.getString(firebaseData, "/Product/1BFOAB5PL482/Saklar2");
+     val2 = firebaseData.stringData(); Serial.print('\n');
 
-     Serial.print("Value 1 ");
-     Serial.println(val1);
+     Serial.print("Value 2 ");
+     Serial.println(val2);
 
-     if(val1==one){ 
+     if(val2==one){ 
       digitalWrite(Saklar2,HIGH);
       digitalWrite(Lamp_saklar2,HIGH);
-      Serial.println("Saklar1 ON");
+      Serial.println("Saklar2 ON");
       } 
-     else if(val1==zero){ 
+     else if(val2==zero){ 
       digitalWrite(Saklar2,LOW);
       digitalWrite(Lamp_saklar2,LOW);
       Serial.println("Saklar 2 OFF");
-      }
+    }    
+  
 }
