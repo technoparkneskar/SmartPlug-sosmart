@@ -33,7 +33,7 @@ Serial.begin(115200);
     WiFiManager wm;
     wm.resetSettings();
     bool res;
-    res = wm.autoConnect("NamaHotspot");
+    res = wm.autoConnect(NamaHotspot);
     if(!res) {
     Serial.println("Failed to connect");
     } 
