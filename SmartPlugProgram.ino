@@ -1,7 +1,7 @@
 #include <PZEM004Tv30.h>
 #include <FirebaseESP8266.h>
 #include <WiFiManager.h>
-#include <NTPClient.h>
+#include <time.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
@@ -32,11 +32,13 @@ String shh;
  String val3;
  String val4;
  String val5;
+ String val6;
  String zero = "0" , one = "1";
 
 //Internet CLock
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "id.pool.ntp.org",25200,60000);
+int timezone = 7 * 3600;
+int dst = 0;
 
 void setup(){
     
@@ -66,18 +68,34 @@ Serial.begin(115200);
     pinMode(Lamp_saklar2,OUTPUT);
    
    //Internet clock begin
-    timeClient.begin();}
+  configTime(timezone, dst, "pool.ntp.org","time.nist.gov");
+  Serial.println("\nWaiting for Internet time");
+
+  while(!time(nullptr)){
+     Serial.print("*");
+     delay(1000);
+  }
+  Serial.println("\nTime response....OK");
+  time_t now = time(nullptr);
+  struct tm* p_tm = localtime(&now);     
+    Second =  p_tm->tm_sec;
+    Minute = p_tm->tm_min;
+    Hour = p_tm->tm_hour;
+    Serial.print(Second);  
+}
 
 void loop(){
     shh=8;
-   //Update time
-    timeClient.update();       
-    Second = Serial.println(timeClient.getSeconds());
-    Minute = Serial.println(timeClient.getMinutes());
-    Hour = Serial.println(timeClient.getHours());
+   //Update time    
     Serial.print(Second);
     Serial.print(Minute);
     Serial.println(Hour);    
+  time_t now = time(nullptr);
+  struct tm* p_tm = localtime(&now);     
+    Second =  p_tm->tm_sec;
+    Minute = p_tm->tm_min;
+    Hour = p_tm->tm_hour;
+
             
    //Read power
     Power = pzem.power();
@@ -169,13 +187,13 @@ void loop(){
      Firebase.getString(firebaseData, "Product/1BFOAB5PL482/Timeon1/Jam");
      val4 = firebaseData.stringData(); Serial.print('\n');
      Firebase.getString(firebaseData, "Product/1BFOAB5PL482/Timeon1/Menit");
-     val5 = firebaseData.stringData(); Serial.print('\n');     
+     val5 = firebaseData.stringData(); Serial.print('\n');
+     val6 = val3+10;          
 
-     if(val3>Second && val3+10<Second){ 
+     if(Second>val3){ 
       digitalWrite(Saklar1,HIGH);
       digitalWrite(Lamp_saklar1,HIGH);
       Serial.println("Saklar1 ON");
       Firebase.setString(firebaseData, "Product/1BFOAB5PL482/Saklar1","1");      
-     }           
-  
+    }             
 }
