@@ -14,12 +14,12 @@
 
 //Pzem sensor
  PZEM004Tv30 pzem(12,13);// D6 dan D7
- float Power,Energy,Voltase,Current;
+float Power,Energy,Voltase,Current;
  
-String Second;
-String Minute;
-String Hour;
-String shh;
+float Second;
+float Minute;
+float Hour;
+float shh;
 
 // Firebase
  FirebaseData firebaseData;
@@ -29,10 +29,8 @@ String shh;
  #define Saklar2 2 //D4
  String val1;
  String val2;
- String val3;
- String val4;
- String val5;
- String val6;
+ float onDetik1,onJam1,onMenit1,onDetik2,onJam2,onMenit2;
+ float offDetik1,offJam1,offMenit1,offDetik2,offJam2,offMenit2;
  String zero = "0" , one = "1";
 
 //Internet CLock
@@ -86,16 +84,16 @@ Serial.begin(115200);
 
 void loop(){
     shh=8;
-   //Update time    
-    Serial.print(Second);
-    Serial.print(Minute);
-    Serial.println(Hour);    
-  time_t now = time(nullptr);
-  struct tm* p_tm = localtime(&now);     
+   //Update time
+    time_t now = time(nullptr);
+    struct tm* p_tm = localtime(&now); 
     Second =  p_tm->tm_sec;
     Minute = p_tm->tm_min;
-    Hour = p_tm->tm_hour;
-
+    Hour = p_tm->tm_hour;    
+    Serial.println(Second);
+    Serial.println(Minute);
+    Serial.println(Hour);    
+    
             
    //Read power
     Power = pzem.power();
@@ -133,7 +131,7 @@ void loop(){
         Serial.println("V");
     }
     
-    //Read Current
+   //Read Current
      Current = pzem.current();
     
      if(isnan(Current)){
@@ -145,12 +143,9 @@ void loop(){
         Serial.println("A");
      }
    
-    //Firebase Saklar1
+   //Firebase Saklar1
      Firebase.getString(firebaseData, "Product/1BFOAB5PL482/Saklar1");
      val1 = firebaseData.stringData(); Serial.print('\n');
-
-     Serial.print("Value 1 ");
-     Serial.println(val1);
 
      if(val1==one){ 
       digitalWrite(Saklar1,HIGH);
@@ -163,12 +158,9 @@ void loop(){
       Serial.println("Saklar 1 OFF");
       }
     
-    //Firebase Saklar2
+   //Firebase Saklar2
      Firebase.getString(firebaseData, "Product/1BFOAB5PL482/Saklar2");
      val2 = firebaseData.stringData(); Serial.print('\n');
-
-     Serial.print("Value 2 ");
-     Serial.println(val2);
 
      if(val2==one){ 
       digitalWrite(Saklar2,HIGH);
@@ -181,19 +173,31 @@ void loop(){
       Serial.println("Saklar 2 OFF");
     }
 
-    //Firebase TimeSaklar1 On
-     Firebase.getString(firebaseData, "Product/1BFOAB5PL482/Timeon1/Detik");
-     val3 = firebaseData.stringData(); Serial.print('\n');
-     Firebase.getString(firebaseData, "Product/1BFOAB5PL482/Timeon1/Jam");
-     val4 = firebaseData.stringData(); Serial.print('\n');
-     Firebase.getString(firebaseData, "Product/1BFOAB5PL482/Timeon1/Menit");
-     val5 = firebaseData.stringData(); Serial.print('\n');
-     val6 = val3+10;          
+   //Firebase TimeSaklar1 On
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon1/Menit");
+    onMenit1 = firebaseData.floatData(); Serial.print('\n');
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon1/Jam");
+    onJam1 = firebaseData.floatData(); Serial.print('\n');  
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon1/Detik");
+    onDetik1 = firebaseData.floatData(); Serial.print('\n');           
 
-     if(Second>val3){ 
+     if((Minute==onMenit1) && (Second>onDetik1) && (Hour==onJam1)){ 
       digitalWrite(Saklar1,HIGH);
       digitalWrite(Lamp_saklar1,HIGH);
-      Serial.println("Saklar1 ON");
       Firebase.setString(firebaseData, "Product/1BFOAB5PL482/Saklar1","1");      
-    }             
+    }
+
+  //Firebase TimeSaklar2 On
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon2/Menit");
+    onMenit2 = firebaseData.floatData(); Serial.print('\n');
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon2/Jam");
+    onJam2 = firebaseData.floatData(); Serial.print('\n');  
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon2/Detik");
+    onDetik2 = firebaseData.floatData(); Serial.print('\n');           
+
+     if((Minute==onMenit2) && (Second>onDetik2) && (Hour==onJam2)){ 
+      digitalWrite(Saklar2,HIGH);
+      digitalWrite(Lamp_saklar2,HIGH);
+      Firebase.setString(firebaseData, "Product/1BFOAB5PL482/Saklar2","1");      
+    }               
 }
