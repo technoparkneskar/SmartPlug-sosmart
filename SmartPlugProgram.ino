@@ -200,4 +200,32 @@ void loop(){
       digitalWrite(Lamp_saklar2,HIGH);
       Firebase.setString(firebaseData, "Product/1BFOAB5PL482/Saklar2","1");      
     }               
+  
+  //Firebase TimeSaklar1 Off    
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff1/Menit");
+    offMenit1 = firebaseData.floatData(); Serial.print('\n');
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff1/Jam");
+    offJam1 = firebaseData.floatData(); Serial.print('\n');  
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff1/Detik");
+    offDetik1 = firebaseData.floatData(); Serial.print('\n');           
+
+     if((Minute==offMenit1) && (Second>offDetik1) && (Hour==offJam1)){ 
+      digitalWrite(Saklar1,LOW);
+      digitalWrite(Lamp_saklar1,LOW);
+      Firebase.setString(firebaseData, "Product/1BFOAB5PL482/Saklar1","0");      
+    }
+    
+  //Firebase TimeSaklar1 Off    
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff2/Menit");
+    offMenit2 = firebaseData.floatData(); Serial.print('\n');
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff2/Jam");
+    offJam2 = firebaseData.floatData(); Serial.print('\n');  
+    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff2/Detik");
+    offDetik2 = firebaseData.floatData(); Serial.print('\n');           
+
+    if((Minute==offMenit2) && (Second>offDetik2) && (Hour==offJam2)){ 
+    digitalWrite(Saklar2,LOW);
+    digitalWrite(Lamp_saklar2,LOW);
+    Firebase.setString(firebaseData, "Product/1BFOAB5PL482/Saklar2","0");      
+    }                       
 }
