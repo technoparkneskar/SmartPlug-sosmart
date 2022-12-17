@@ -20,6 +20,9 @@ float Minute;
 float Hour;
 float shh;
 
+int Tombol;
+float fungsi;
+
 // Firebase
  FirebaseData firebaseData;
  #define Lamp_saklar1 5 //D1
@@ -40,12 +43,16 @@ void setup(){
     
 Serial.begin(115200);
    
+   //Tombol
+   pinMode(16, INPUT);
+
    //WifiManager:
     WiFiManager wm;
     bool res;
     res = wm.autoConnect(NamaHotspot);
     if(!res) {
     Serial.println("Failed to connect");
+    wm.resetSettings();
     } 
     else {
      Serial.println("connected...yeey :)");
@@ -81,6 +88,10 @@ Serial.begin(115200);
 }
 
 void loop(){
+
+   //tombol
+   Tombol=digitalRead(16); 
+
     shh=8;
    //Update time
     time_t now = time(nullptr);
@@ -174,60 +185,30 @@ void loop(){
       digitalWrite(Lamp_saklar2,LOW);
       Serial.println("Saklar 2 OFF");
     }
-
-   //Firebase TimeSaklar1 On
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon1/Menit");
-    onMenit1 = firebaseData.floatData(); Serial.print('\n');
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon1/Jam");
-    onJam1 = firebaseData.floatData(); Serial.print('\n');  
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon1/Detik");
-    onDetik1 = firebaseData.floatData(); Serial.print('\n');           
-
-     if((Minute==onMenit1) && (Second>onDetik1) && (Hour==onJam1)){ 
-      digitalWrite(Saklar1,HIGH);
-      digitalWrite(Lamp_saklar1,HIGH);
-      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/1",true);      
-    }
-
-  //Firebase TimeSaklar2 On
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon2/Menit");
-    onMenit2 = firebaseData.floatData(); Serial.print('\n');
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon2/Jam");
-    onJam2 = firebaseData.floatData(); Serial.print('\n');  
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeon2/Detik");
-    onDetik2 = firebaseData.floatData(); Serial.print('\n');           
-
-     if((Minute==onMenit2) && (Second>onDetik2) && (Hour==onJam2)){ 
-      digitalWrite(Saklar2,HIGH);
-      digitalWrite(Lamp_saklar2,HIGH);
-      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/2",true);      
-    }               
-  
-  //Firebase TimeSaklar1 Off    
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff1/Menit");
-    offMenit1 = firebaseData.floatData(); Serial.print('\n');
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff1/Jam");
-    offJam1 = firebaseData.floatData(); Serial.print('\n');  
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff1/Detik");
-    offDetik1 = firebaseData.floatData(); Serial.print('\n');           
-
-     if((Minute==offMenit1) && (Second>offDetik1) && (Hour==offJam1)){ 
+   //Tombol Emergency
+     if(Tombol==1) {
+      if(fungsi==1){
       digitalWrite(Saklar1,LOW);
       digitalWrite(Lamp_saklar1,LOW);
-      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/1",false);      
+      digitalWrite(Saklar2,LOW);
+      digitalWrite(Lamp_saklar2,LOW);
+      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/1",false);
+      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/2",false);
+      fungsi=0;
+      delay(500);
+      }
+     else {
+      digitalWrite(Saklar1,HIGH);
+      digitalWrite(Lamp_saklar1,HIGH);
+      digitalWrite(Saklar2,HIGH);
+      digitalWrite(Lamp_saklar2,HIGH);
+      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/1",true);
+      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/2",true);
+      fungsi=1;
+      delay(500);
+     }
     }
     
-  //Firebase TimeSaklar1 Off    
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff2/Menit");
-    offMenit2 = firebaseData.floatData(); Serial.print('\n');
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff2/Jam");
-    offJam2 = firebaseData.floatData(); Serial.print('\n');  
-    Firebase.getFloat(firebaseData, "Product/1BFOAB5PL482/Timeoff2/Detik");
-    offDetik2 = firebaseData.floatData(); Serial.print('\n');           
-
-    if((Minute==offMenit2) && (Second>offDetik2) && (Hour==offJam2)){ 
-    digitalWrite(Saklar2,LOW);
-    digitalWrite(Lamp_saklar2,LOW);
-    Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/2",false);      
-    }                       
+   // emergency button
+   if (Tombol==1)                   
 }
