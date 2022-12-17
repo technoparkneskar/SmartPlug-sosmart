@@ -9,7 +9,7 @@
  #define FIREBASE_HOST "https://sosmart-technopark-default-rtdb.firebaseio.com/" //Sesuaikan dengan link firebase database kalian, tanpa menggunakan "http:" , "\" and "/"
  #define FIREBASE_AUTH "afL12P1vXA0goN4ia42rsC4DUYLnNMqI19XRIye6" //Sesuaikan dengan firebase database secret code kalian
 //Nama hotspot jika tak tersambung
- #define NamaHotspot "ControlLampFirebase" // Nama hotspot di esp8266
+ #define NamaHotspot "SOSMART-1BFOAB5PL482" // Nama hotspot di esp8266
 
 //Pzem sensor
  PZEM004Tv30 pzem(12,13);// D6 dan D7 rx tx
@@ -31,8 +31,6 @@ float fungsi;
  #define Saklar2 2 //D4
  bool val1;
  bool val2;
- float onDetik1,onJam1,onMenit1,onDetik2,onJam2,onMenit2;
- float offDetik1,offJam1,offMenit1,offDetik2,offJam2,offMenit2;
 
 //Internet CLock
 WiFiUDP ntpUDP;
@@ -188,27 +186,24 @@ void loop(){
    //Tombol Emergency
      if(Tombol==1) {
       if(fungsi==1){
+      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/1",false);
+      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/2",false);      
       digitalWrite(Saklar1,LOW);
       digitalWrite(Lamp_saklar1,LOW);
       digitalWrite(Saklar2,LOW);
       digitalWrite(Lamp_saklar2,LOW);
-      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/1",false);
-      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/2",false);
+      delay(500);      
       fungsi=0;
-      delay(500);
       }
      else {
+      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/1",true);
+      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/2",true);
       digitalWrite(Saklar1,HIGH);
       digitalWrite(Lamp_saklar1,HIGH);
       digitalWrite(Saklar2,HIGH);
       digitalWrite(Lamp_saklar2,HIGH);
-      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/1",true);
-      Firebase.setBool(firebaseData, "Product/1BFOAB5PL482/Switch/2",true);
+      delay(500);      
       fungsi=1;
-      delay(500);
-     }
-    }
-    
-   // emergency button
-   if (Tombol==1)                   
+      }
+    }                
 }
