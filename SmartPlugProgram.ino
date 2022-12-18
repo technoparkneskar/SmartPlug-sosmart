@@ -22,6 +22,8 @@ float shh;
 
 int Tombol;
 float fungsi;
+float S1;
+float S2;
 
 // Firebase
  FirebaseData firebaseData;
@@ -162,11 +164,13 @@ void loop(){
       digitalWrite(Saklar1,HIGH);
       digitalWrite(Lamp_saklar1,HIGH);
       Serial.println("Saklar1 ON");
+      S1=1;
       } 
      else if(val1==false){ 
       digitalWrite(Saklar1,LOW);
       digitalWrite(Lamp_saklar1,LOW);
       Serial.println("Saklar 1 OFF");
+      S1=0;      
       }
     
    //Firebase Saklar2
@@ -177,11 +181,13 @@ void loop(){
       digitalWrite(Saklar2,HIGH);
       digitalWrite(Lamp_saklar2,HIGH);
       Serial.println("Saklar2 ON");
+      S2=1;
       } 
      else if(val2==false){ 
       digitalWrite(Saklar2,LOW);
       digitalWrite(Lamp_saklar2,LOW);
       Serial.println("Saklar 2 OFF");
+      S2=0;
     }
    //Tombol Emergency
      if(Tombol==1) {
@@ -205,5 +211,14 @@ void loop(){
       delay(500);      
       fungsi=1;
       }
-    }                
+    }
+    
+   // FUngsi Emergency
+     if(S1==1 && S2==1){
+     fungsi=1;       
+     }
+     else if(S1==0 && S2==0){
+     fungsi=0;       
+     }           
+  delay(100);                      
 }
