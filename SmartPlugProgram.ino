@@ -219,6 +219,9 @@ void loop(){
      }
      else if(S1==0 && S2==0){
      fungsi=0;       
-     }           
+     }
+     else if(S1==1 || S2==1){
+     fungsi=1;
+     }
   delay(100);                      
 }
